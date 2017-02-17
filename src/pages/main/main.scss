@@ -1,0 +1,108 @@
+page-main {
+    .search-hightlight {
+        color: sienna;
+    }
+    .word-search-list {
+        margin-bottom: 20px;
+        background-color: whitesmoke;
+        margin-top: -15px;
+    }
+    .word-search-list button {
+        font-size: 9px;
+    }
+    .word-search-list button .search-hightlight {
+        color: sienna;
+        text-transform: capitalize;
+    }
+    .word-search-list button .search-normal {
+        text-transform: lowercase;
+    }
+    .word-type {
+        font-weight: bold;
+    }
+    .word-pronunc {
+        padding: 8px !important;
+        height: 1.5em;
+        margin-top: -5px;
+    }
+    .word-example {
+        color: cadetblue;
+        font-style: italic;
+    }
+    .word-type {
+        font-weight: bold;
+    }
+    .verb-tenses {
+        display: inline-block;
+    }
+    .word-pronunc {
+        padding: 8px !important;
+        height: 1.5em;
+        margin-top: -5px;
+    }
+    .word-example {
+        color: cadetblue;
+        font-style: italic;
+    }
+    .word-container {
+        margin-top: -10px;
+    }
+    .word-button {
+        position: relative;
+        margin-right: 7px;
+    }
+    .word-button button {
+        /* height: 2.5em !important; */
+        font-size: 10px;
+        text-transform: capitalize;
+    }
+    .word-selected {
+        color: sienna;
+    }
+    .word-remove {
+        position: absolute;
+        top: -4px;
+        right: -1px;
+        font-size: 12px !important;
+        color: steelblue;
+        background-color: #fff;
+    }
+    .word-save {
+        position: absolute;
+        top: 14px;
+        right: -1px;
+        font-size: 12px !important;
+        color: steelblue;
+        background-color: #fff;
+    }
+    .word-unsave {
+        position: absolute;
+        top: 14px;
+        right: -1px;
+        font-size: 12px !important;
+        color: darkgray;
+        background-color: #fff;
+    }
+    .word-dropdown-icons {
+        color: #387ef5;
+        display: inline-block;
+        margin-top: 0px;
+        position: absolute;
+        right: 20px;
+    }
+    .review-today {
+        font-size: 9px;
+        position: absolute;
+        top: 5px;
+        right: 8px;
+    }
+    .review-today .review {
+        color: #387ef5;
+    }
+    /*
+    .left-title>div {
+        position: absolute;
+        left: -80px;
+    }
+    */
+}

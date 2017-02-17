@@ -1,0 +1,19 @@
+<ion-menu [content]="content">
+    <ion-header>
+        <ion-toolbar>
+            <ion-title>Word Browser</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content class="mainmenu">
+        <ion-list class="item">
+            <button ion-item *ngFor="let p of pages" (click)="openPage(p)">
+              <div class="meunu-item">
+                <img class="icon" src='{{p.image}}' />
+                <div class="text" >{{p.title}}</div>
+              </div>
+            </button>
+        </ion-list>
+    </ion-content>
+</ion-menu>
+
+<ion-nav [root]="rootPage" #content></ion-nav>

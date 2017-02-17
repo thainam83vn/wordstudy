@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-navbar>
+        <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+        <ion-title>My Words
+            <!--
+            <button ion-button outline item-right icon-left (click)="emailMe()" type="submit">
+              <ion-icon name="mail"></ion-icon>
+              Email me
+            </button>
+            -->
+        </ion-title>
+
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <div class="panel-date" *ngFor="let date of dates">
+        <button ion-item (click)="expandDate(date)">
+        {{date.date}} 
+        <span *ngIf="isToday(date)"> Today</span>
+      </button>
+
+        <div class="panel-words">
+            <div class="word" *ngIf="!date.collapse">
+                <button ion-item *ngFor="let wd of  wordbox.getSavedWordsByDate(date.date)" (click)="openWord(wd)">
+              {{wd.word}}
+          </button>
+            </div>
+        </div>
+    </div>
+</ion-content>

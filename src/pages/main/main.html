@@ -1,0 +1,92 @@
+<ion-header>
+    <ion-navbar>
+        <button ion-button menuToggle icon-only>
+          <ion-icon name='menu'></ion-icon>
+        </button>
+        <ion-title class="left-title">Browse Word</ion-title>
+        <div class="review-today">
+            Today you have learned {{wordbox.getTodayWords().length}} word(s).<span class="review" *ngIf="wordbox.getTodayWords().length>0" (click)="review()"> Review?</span>
+        </div>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-list class="toolbar">
+        <ion-item>
+
+            <ion-input [(ngModel)]="word" placeholder="Type your word" (keyup)="wordKeyup($event)"></ion-input>
+            <button ion-button outline item-right icon-left (click)="search()" type="submit">
+          <ion-icon name="refresh"></ion-icon>
+          Browse
+        </button>
+        </ion-item>
+    </ion-list>
+    <div class="word-search-list" *ngIf="typing">
+        <button ion-button outline small item-right icon-left *ngFor="let searchword of searchwords" (click)="searchWord(searchword)">
+        <span class="search-hightlight">{{word}}</span>
+        <span class="search-normal">{{removeHighlightText(searchword.text)}}</span>
+    </button>
+    </div>
+    <div class="word-container">
+        <span class="word-button" *ngFor="let wd of wordbox.words">
+      <button ion-button outline small item-right icon-left   
+          [ngClass]="{'word-selected': wd == wordbox.word}"
+          (click)="wordbox.selectWord(wd)" >
+          {{wd.word}}
+
+      </button>      
+      <div class="word-remove" (click)="wordbox.removeWord(wd)" *ngIf="wd == wordbox.word">
+        <ion-icon name="close-circle"></ion-icon>
+      </div>
+      <div [ngClass]="{'word-save': wd.saved, 'word-unsave':  !wd.saved}" (click)="wordbox.saveWord(wd)"  *ngIf="wd == wordbox.word">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>    
+    </span>
+
+        <div *ngIf="wordbox.word != null">
+            <ion-card *ngFor="let entry of wordbox.word.entries">
+                <ion-card-header>
+                    <div>
+                        <ion-badge item-right>{{entry.type}}</ion-badge>
+                        <div class="verb-tenses" *ngIf="entry.verb != null && entry.type=='verb'">
+                            <ion-badge item-right>{{entry.verb.infinity}} - {{entry.verb.past}} - {{entry.verb.participle}}</ion-badge>
+
+                        </div>
+                        <div class="word-dropdown-icons">
+                            <ion-icon name="arrow-dropdown" *ngIf="entry.collapsed" (click)="entry.collapsed=false"></ion-icon>
+                            <ion-icon name="arrow-dropup" *ngIf="!entry.collapsed" (click)="entry.collapsed=true"></ion-icon>
+                        </div>
+                    </div>
+                </ion-card-header>
+                <ion-card-content *ngIf="!entry.collapsed">
+                    <div>
+                        <button class="word-pronunc" ion-button outline round small item-right icon-left (click)="playSound(entry.pronunc.uk.mp3)">
+                            <ion-icon name="volume-up"></ion-icon>
+                            <img src='assets/icon/uk.png'/>/{{entry.pronunc.uk.text}}/
+                        </button>
+
+                        <button class="word-pronunc" ion-button outline round small item-right icon-left (click)="playSound(entry.pronunc.us.mp3)">
+                            <ion-icon name="volume-up"></ion-icon>
+                            <img src='assets/icon/us.png'/>/{{entry.pronunc.us.text}}/
+                        </button>
+
+                    </div>
+
+                    <div class="word-body">
+                        <div class="word-definition" *ngFor="let definition of entry.definitions">
+                            <ion-icon name="information-circle"></ion-icon>
+                            <span class="word-definition-text" *ngFor="let w of definition.definition.split(' ')" (click)="wordClick(w)">{{w}} </span>
+                            <div class="word-example" *ngFor="let example of definition.examples">
+                                <ion-icon name="chatbubbles"></ion-icon>
+                                <span class="word-example-text" *ngFor="let w of example.split(' ')" (click)="wordClick(w)">{{w}} </span>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </div>
+    </div>
+
+
+</ion-content>
