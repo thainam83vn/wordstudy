@@ -48,7 +48,7 @@ export class CambridgeDictionary {
         var self = this;
         var def = StringLib.tagContent(body, '<b class="def">', '</b>');
 
-        var defbody = StringLib.tagContent(body, '<span class="def-body">', '</span>');
+        var defbody = StringLib.tagContent(body, '<span class="def-body">', '</span></div>');
         if (defbody != null){
             var sarr = defbody.split('<div class="examp emphasized">');
             var examples = [];

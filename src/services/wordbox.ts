@@ -186,6 +186,7 @@ export class WordBox {
             url:self.url + w.toLowerCase() + "%27",
             dataType: "html",
             success: function(data){
+                console.log(data);
                 var dic = new CambridgeDictionary();
                 var entry = dic.parse(data);
                 callback(entry);
