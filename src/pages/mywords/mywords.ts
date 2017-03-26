@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import 'rxjs/add/operator/map';
 import {Storage} from '@ionic/storage';
 //import {HTTP, NativeAudio} from 'ionic-native';
-import { EmailComposer } from 'ionic-native';
+//import { EmailComposer } from 'ionic-native';
 import { NavController, Alert, LoadingController, ToastController  } from 'ionic-angular';
 import { CambridgeDictionary } from '../../services/dictionary-cambridge';
 import { StringLib } from '../../services/stringlib';
@@ -65,12 +65,27 @@ export class MyWordsPage {
     return date.date == common.dateToString(new Date());
   }
 
-  emailMe(){
-    var s = "";
-    common.each(this.wordbox.savedWords, (w: Word)=>{
-      s += w.word + "\n";
+  download(){
+    this.wordbox.syncFromServer(()=>{
+
+    }, () => {
+
     });
-    alert(s);
+  }
+
+  emailMe(){
+    this.wordbox.syncToServer(()=>{
+
+    }, () => {
+
+    });
+    //lert("hello");
+    //File.checkDir("/", 'mydir').then(_ => console.log('yay')).catch(err => console.log('boooh'));
+    // var s = "";
+    // common.each(this.wordbox.savedWords, (w: Word)=>{
+    //   s += w.word + "\n";
+    // });
+    // alert(s);
     /*
     try{
       let email = {
@@ -88,5 +103,8 @@ export class MyWordsPage {
     }
     */
     
+  }
+  scrap(){
+    this.wordbox.scrapWords();
   }
 }

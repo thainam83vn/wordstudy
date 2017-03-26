@@ -4,27 +4,43 @@ import { common } from './common';
 import { Storage } from '@ionic/storage';
 import { Word, WordEntry } from './word-model';
 import { Verbs, Verb } from './verb';
+import { WordList } from './word-list';
+import { IWeb } from './iweb';
+import { WebAjax } from './webajax';
+import { IWordServer } from './iwordserver';
+import { WordServerPhone } from './WordServerPhone';
 
 
 export class WordBox {
     url: string = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%27http%3A%2F%2Fdictionary.cambridge.org%2Fus%2Fdictionary%2Fenglish%2F";
+    //urlServer: string = "http://54.187.239.131:3000";
+    urlServer: string = "http://localhost:3000";
+    userId: string = "tranthainam";
     words: Word[] = [];
     word: Word;
     savedWords: Word[] = [];
     verbs: Verbs;
+    wordserver: IWordServer;
 
     static instance: WordBox;
 
     static getWordBox():WordBox{
         if (WordBox.instance == null)
-            WordBox.instance = new WordBox();
+            WordBox.instance = new WordBox(new WordServerPhone(new WebAjax()));
         return WordBox.instance;
     }
 
-    constructor(){
-        this.getWordsFromStore();
+    constructor(wordserver: IWordServer){
+        try{
+            this.getWordsFromStore();
+        }catch(ex){
+            console.log("Error getting data from local store.");
+        }
         this.verbs = Verbs.getVerbs();
+        this.wordserver = wordserver;
     }    
+
+    
 
     getTodayWords(): Word[]{
         var today = common.dateToString(new Date());
@@ -78,6 +94,7 @@ export class WordBox {
             this.savedWords = JSON.parse(sjson);
         else 
             this.savedWords = [];
+        console.log(this.savedWords);
     }
 
     syncToStore(){
@@ -182,18 +199,241 @@ export class WordBox {
 
     browseWord(w: string, callback: any, errorCallback: any){
         var self = this;
-        $.ajax({
-            url:self.url + w.toLowerCase() + "%27",
-            dataType: "html",
-            success: function(data){
-                console.log(data);
-                var dic = new CambridgeDictionary();
-                var entry = dic.parse(data);
-                callback(entry);
-            },
-            error: function(error){
-                errorCallback(error);
+        //self.url + w.toLowerCase() + "%27"
+        self.wordserver.browse(w, callback, errorCallback);
+        // self.web.getDataType(self.url + w.toLowerCase() + "%27", "html", (data)=>{
+        //     //console.log("data", data);
+        //     var dic = new CambridgeDictionary();
+        //     var entry = dic.parse(data);
+        //     callback(entry);
+        // }, (err)=>{
+        //     errorCallback(err);
+        // });
+        // $.ajax({
+        //     url:self.url + w.toLowerCase() + "%27",
+        //     dataType: "html",
+        //     success: function(data){
+        //         //console.log(data);
+        //         var dic = new CambridgeDictionary();
+        //         var entry = dic.parse(data);
+        //         callback(entry);
+        //     },
+        //     error: function(error){
+        //         errorCallback(error);
+        //     }
+        // });
+    }
+
+    syncToServer(callback: any, errorCallback: any){
+        var self = this;
+        self.wordserver.postWords(self.savedWords, (data)=>{
+            callback(data);
+        }, (err)=>{
+            errorCallback(err);
+        });
+        // self.web.post(self.urlServer+ "/" + this.userId,self.savedWords, (data)=>{
+        //     callback(data);
+        // }, (err)=>{
+        //     errorCallback(err);
+        // });
+        // $.ajax({
+        //     url:self.urlServer+ "/" + this.userId,
+        //     method:"POST",
+        //     data: {body: self.savedWords},
+        //     success: function(data){
+        //         callback(data);
+        //     },
+        //     error: function(error){
+        //         errorCallback(error);
+        //     }
+        // });
+    }
+
+    queueWords: string[];
+
+    addWordFromCurrentQueue(){
+        var self = this;
+        if (self.queueWords.length > 0){
+            // var w = self.queueWords[0];
+            // self.addWord(w, (word: Word)=>{
+            //     word.saved = true;
+            //     self.queueWords.splice(0, 1);
+            //     self.addWordFromCurrentQueue();
+            // }, (error)=>{
+            //     console.log("Error: ", error);
+            // });
+
+            setTimeout(()=>{
+                var w = self.queueWords[0];
+                console.log(w);
+                self.addWord(w, (word: Word)=>{
+                    //word.saved = true;
+                    if (word != null)
+                        self.saveWord(word);
+                    self.queueWords.splice(0, 1);
+                    console.log(word);
+                    //console.log(self.queueWords);
+                    //self.syncToStore();
+                    self.addWordFromCurrentQueue();
+                    
+                }, (error)=>{
+                    console.log("Error: ", error);
+                });
+            }, 2000);
+        }
+    }
+
+    syncFromServer(callback: any, errorCallback: any){
+        var self = this;
+        self.wordserver.getWords((data)=>{
+            console.log(data);
+            if (data[0].words != null){
+                var sjson = JSON.stringify(data[0].words);
+                window.localStorage.setItem("words", sjson);
+                self.getWordsFromStore();
+            } 
+            else if (data[0].unsavedwords != null){
+                self.queueWords = data[0].unsavedwords;
+                self.addWordFromCurrentQueue();                
             }
+        }, (err)=>{
+            errorCallback(err);
+        });
+        // self.web.get(self.urlServer + "/" + this.userId, (data)=>{
+        //     console.log(data);
+        //     if (data[0].words != null){
+        //         var sjson = JSON.stringify(data[0].words);
+        //         window.localStorage.setItem("words", sjson);
+        //         self.getWordsFromStore();
+        //     } 
+        //     else if (data[0].unsavedwords != null){
+        //         self.queueWords = data[0].unsavedwords;
+        //         self.addWordFromCurrentQueue();                
+        //     }
+        // }, (err)=>{
+        //     errorCallback(err);
+        // });
+
+        // $.ajax({
+        //     url:self.urlServer + "/" + this.userId,
+        //     method:"GET",
+        //     success: function(data){
+        //         console.log(data);
+        //         if (data[0].words != null){
+        //             var sjson = JSON.stringify(data[0].words);
+        //             window.localStorage.setItem("words", sjson);
+        //             self.getWordsFromStore();
+        //         } 
+        //         else if (data[0].unsavedwords != null){
+        //             self.queueWords = data[0].unsavedwords;
+        //             self.addWordFromCurrentQueue();
+                    
+        //         }
+        //     },
+        //     error: function(error){
+        //         errorCallback(error);
+        //     }
+        // });
+    }
+
+    postWordToServer(word: string, entry: any, callback: any, errorCallback: any){
+        var self = this;
+        console.log("save ", word, " to server");
+        self.wordserver.post(word, entry, callback, errorCallback);
+        // self.web.post(self.urlServer+ "/admin/" + word, entry, (data)=>{
+        //     callback(data);
+        // }, (err)=>{
+        //     errorCallback(err);
+        // });
+        // $.ajax({
+        //     url:self.urlServer+ "/admin/" + word,
+        //     method:"POST",
+        //     data: {body: entry},
+        //     success: function(data){
+        //         callback(data);
+        //     },
+        //     error: function(error){
+        //         errorCallback(error);
+        //     }
+        // });
+    }
+
+    getWordFromServer(word: string, callback: any, errorCallback: any){
+        var self = this;
+        self.wordserver.get(word, callback, errorCallback);
+        // self.web.get(self.urlServer+ "/admin/" + word, (data)=>{
+        //     callback(data);
+        // }, (err)=>{
+        //     errorCallback(err);
+        // });
+        // $.ajax({
+        //     url:self.urlServer+ "/admin/" + word,
+        //     method:"GET",
+        //     success: function(data){
+        //         callback(data);
+        //     },
+        //     error: function(error){
+        //         errorCallback(error);
+        //     }
+        // });
+    }
+
+    scrappingWords: string[] = null;
+    scrapCount: number = 0;
+    scrapFailCount: number = 0;
+    scrapWords(){       
+        console.log("Total fails:", this.scrapFailCount, "/", this.scrapCount);
+        var self = this;
+        if (this.scrappingWords == null){
+            this.scrappingWords = WordList.getList();
+            this.scrapCount = 0;
+            this.scrapFailCount = 0;
+        }
+        console.log(self.scrappingWords);
+        if (self.scrappingWords.length > 0){
+            var word = this.scrappingWords[0];
+            this.scrappingWords.splice(0, 1);
+            console.log("word=",word);
+            if (word == ''){
+                self.scrapWords();
+            } else {
+                self.getWordFromServer(word, (entry)=>{
+                    if (entry.length > 0){
+                        console.log(word, " already existed!");
+                        self.scrapWords();
+                    } else {
+                        console.log("scrapping ", word, " from remote source!");
+                        self.scrapWordFromRemote(word);
+                    }
+                }, (error)=>{
+                    console.log(error);
+                    self.scrapWordFromRemote(word);
+                });
+            }
+            
+        }
+    }
+
+    private scrapWordFromRemote(word: string){
+        var self = this;
+        this.browseWord(word, (entry)=>{
+            console.log("scrapped result: ", word, entry);
+            if (entry != null && entry.length > 0){
+                self.postWordToServer(word, entry, ()=>{
+                }, (error)=>{
+                    console.log(error);
+                });
+            } else {
+                this.scrapFailCount++;
+            }
+            this.scrapCount++;
+            setTimeout(function(){
+                self.scrapWords();
+            }, 5000);
+        }, (error)=>{
+            setTimeout(function(){
+                self.scrapWords();
+            }, 5000);
         });
     }
 }
