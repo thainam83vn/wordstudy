@@ -45,6 +45,7 @@ export class WordServerNodeJs implements IWordServer {
         });
     }
     post(word: string, entry: any, success: any, error: any) {
+        console.log("WordServerNodeJs.post ", word);
         var collUsers = this.db.get('users');
         collUsers.update({ 'userId': this.userId }, 
             { 'userId': this.userId, 'words': entry }, { upsert: true });
