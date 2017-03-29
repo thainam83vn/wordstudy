@@ -48,13 +48,15 @@ export class WordServerFile implements IWordServer {
         
     }
     post(word: string, entry: any, success: any, error: any) {
+        var w = word.toLowerCase();
         var fs = require('fs');
 
-        var dir = this.serverPath + "/" + word[0];
-        if (!fs.existsSync(dir)){
+        var dir = this.serverPath + "/" + w[0];
+        if (!fs.existsSync(dir)){            
             fs.mkdirSync(dir);
+            console.log("create folder " + dir);
         }
-        var filePath = dir + "/" + word + ".json";
+        var filePath = dir + "/" + w + ".json";
         var sEntry = JSON.stringify(entry);
         
         fs.writeFile(filePath, sEntry, function(err) {
