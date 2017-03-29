@@ -7,7 +7,7 @@ export class WordServerFile implements IWordServer {
     host:string = "dictionary.cambridge.org";
     path:string = "/dictionary/english/";
 
-    serverPath: string = "/Users/thai/Desktop/workspace/wordstudy/data";
+    serverPath: string = "/home/pi/workspace/wordstudy/data";
     userId: string = "tranthainam";
     web: IWeb;
 
