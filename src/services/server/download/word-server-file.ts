@@ -27,6 +27,25 @@ export class WordServerFile implements IWordServer {
         });         
     }
 
+    getTime():string{
+        var date = new Date();
+        return date.getFullYear() + "-" +  date.getMonth + "-" + date.getDate 
+            + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    }
+
+    log(message: string){
+        var fs = require('fs');
+        var filePath = this.serverPath + "/log.txt";
+        
+        fs.appendFile(filePath,  this.getTime() + ": " + message + "\n", function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            console.log("Update log error.");
+        });         
+    }
+
+
     browse(w: string, success: any, error: any) {
         var self = this;
         self.web.getDataType([self.host, self.path + w.toLowerCase()], "html", (data)=>{
@@ -35,7 +54,7 @@ export class WordServerFile implements IWordServer {
             var entry = dic.parse(data);
             if (entry.length == 0){
                 self.logError(w);
-            }
+            } 
             success(entry);
         }, (err)=>{
             error(err);

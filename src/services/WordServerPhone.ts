@@ -55,5 +55,9 @@ export class WordServerPhone implements IWordServer {
         });
     }
 
+    log(message: string){
+        
+    }
+
 
 }

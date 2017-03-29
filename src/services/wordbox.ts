@@ -382,7 +382,6 @@ export class WordBox {
     scrapCount: number = 0;
     scrapFailCount: number = 0;
     scrapWords(){       
-        console.log("Total fails:", this.scrapFailCount, "/", this.scrapCount);
         var self = this;
         if (this.scrappingWords == null){
             this.scrappingWords = WordList.getList();
@@ -390,10 +389,13 @@ export class WordBox {
             this.scrapFailCount = 0;
         }
         console.log(self.scrappingWords);
-        if (self.scrappingWords.length > 0){
+        if (self.scrappingWords.length > 0){            
             var word = this.scrappingWords[0];
+    
+            console.log("Total fails:", this.scrapFailCount, "/", this.scrapCount , " ", word);
+            this.wordserver.log("Total fails:"+ this.scrapFailCount+ "/"+ this.scrapCount + "   browsing " + word);
+
             this.scrappingWords.splice(0, 1);
-            console.log("word=",word);
             if (word == ''){
                 self.scrapWords();
             } else {
