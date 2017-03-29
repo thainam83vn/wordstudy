@@ -56,5 +56,8 @@ export class WordServerNodeJs implements IWordServer {
         
     }
 
+    log(message: string){
+        
+    }
 
 }

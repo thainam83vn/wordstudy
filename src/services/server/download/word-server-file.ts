@@ -29,7 +29,7 @@ export class WordServerFile implements IWordServer {
 
     getTime():string{
         var date = new Date();
-        return date.getFullYear() + "-" +  date.getMonth + "-" + date.getDate 
+        return date.getFullYear() + "-" +  date.getMonth() + "-" + date.getDate() 
             + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
