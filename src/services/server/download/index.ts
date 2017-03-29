@@ -2,6 +2,7 @@ import { WordList } from '../../word-list';
 import { WordBox } from '../../wordbox';
 import { WebNodeJs } from './web-nodejs';
 import { WordServerNodeJs } from './word-server-nodejs';
+import { WordServerFile } from './word-server-file';
 var http = require('http');
 var mongo = require('mongodb');
 var monk = require('monk');
@@ -20,7 +21,7 @@ var path = require('path');
 // }
 
 console.log("start--------------------------------");
-var wordbox = new WordBox(new WordServerNodeJs(http, db));
+var wordbox = new WordBox(new WordServerFile(http));
 // wordbox.browseWord('touch', (entries)=>{
 //     console.log(entries);
 // }, (error)=>{
