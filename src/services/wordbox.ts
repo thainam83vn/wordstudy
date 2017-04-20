@@ -387,6 +387,10 @@ export class WordBox {
             this.scrappingWords = WordList.getList();
             this.scrapCount = 0;
             this.scrapFailCount = 0;
+            while (this.scrappingWords.length > 0 && this.scrappingWords[0] != 'trineural'){
+               console.log('skip ', this.scrappingWords[0]);
+               this.scrappingWords.splice(0,1);               
+            }
         }
         console.log(self.scrappingWords);
         if (self.scrappingWords.length > 0){            
